@@ -29,7 +29,7 @@ public class NobelPrize extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("GUIScreen.fxml"));
         
         Scene scene = new Scene(root);
         
@@ -65,7 +65,7 @@ public class NobelPrize extends Application {
             System.out.println("IOException");
         }
         
-        //Create a BufferedReader obj to efficiently read text from a character stream
+        //Create a BufferedReader obj to efficiently hold text from a character stream
         //and use InputStreamReader to decode bytes into characters
         JSONObject jsonObj = null;
         try {
@@ -73,7 +73,7 @@ public class NobelPrize extends Application {
             //call readData to put all the text into a string and put in JSONOBject
             String jsonText = readData(reader);
             jsonObj = new JSONObject(jsonText);
-        } catch (IOException | JSONException ex){
+        } catch (JSONException ex){
             System.out.println("IOException");
         }
         
@@ -88,14 +88,17 @@ public class NobelPrize extends Application {
 
     //this function reads data from the Reader object which reads the character
     //stream of API data. The data is read and returned as a string.
-    private static String readData (Reader readObj) throws IOException {
+    private static String readData (Reader readObj) {
         //create a StringBuilder to hold data
         StringBuilder stringData = new StringBuilder();
         int charVal;
-        //read chars and append to the stringbuilder until end of stream reached
-        while ((charVal=readObj.read())!= -1){
+        try {
+            //read chars and append to the stringbuilder until end of stream reached
+            while ((charVal=readObj.read())!= -1){
             stringData.append((char)charVal);
-        } 
+            }
+        } catch (IOException excep){};
+        
         return stringData.toString();
     }
     
@@ -105,5 +108,7 @@ public class NobelPrize extends Application {
         System.out.println(json.toString(4));
         //print all the data based on the name (key) of "prizes"
         System.out.println(json.get("prizes"));
+        //launch JavaFX application
+        launch(args);
     }    
 }
