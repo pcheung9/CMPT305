@@ -37,7 +37,7 @@ public class NobelPrize extends Application {
         stage.show();
     }
 
-    private static String readLines (Reader readObj) throws IOException {
+    private static String readData (Reader readObj) throws IOException {
         StringBuilder stringbuilder = new StringBuilder();
         int charVal;
         //append a single character at a time to the stringbuilder
@@ -77,10 +77,9 @@ public class NobelPrize extends Application {
         //and use InputStreamReader to decode bytes into characters
         JSONObject jsonObj = null;
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(nobelDataStream));
-            
-            //call readLines to put all the text into a string
-            String jsonText = readLines(reader);
+            Reader reader = new BufferedReader(new InputStreamReader(nobelDataStream));
+            //call readData to put all the text into a string
+            String jsonText = readData(reader);
             jsonObj = new JSONObject(jsonText);
         } catch (IOException | JSONException ex){
             System.out.println("IOException");
@@ -96,9 +95,10 @@ public class NobelPrize extends Application {
     }
 
     public static void main(String[] args) {
-        JSONObject json = new JSONObject();
-        json = readUrl("http://api.nobelprize.org/v1/prize.json?");
+        //create json object to hold the nobel prize data
+        JSONObject json = readUrl("http://api.nobelprize.org/v1/prize.json?");
         System.out.println(json.toString(4));
+        //print all the data based on the name (key) of "prizes"
         System.out.println(json.get("prizes"));
     }    
 }
