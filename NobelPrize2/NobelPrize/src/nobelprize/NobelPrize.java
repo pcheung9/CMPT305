@@ -36,18 +36,10 @@ public class NobelPrize extends Application {
         stage.setScene(scene);
         stage.show();
     }
-
-    private static String readData (Reader readObj) throws IOException {
-        StringBuilder stringbuilder = new StringBuilder();
-        int charVal;
-        //append a single character at a time to the stringbuilder
-        while ((charVal = readObj.read()) != -1) {
-            stringbuilder.append((char) charVal);
-        }
-        return stringbuilder.toString();
-    }
     
-    
+    //This function reads data from the Nobel prize API. It takes the 
+    //API URL as an argument and returns a JSON object, which holds
+    //the name/value pairs of the Nobel prize JSON data.
     public static JSONObject readUrl(String url) {
         //create a URL object to identify the webaddress
         URL nobelAPI = null;
@@ -78,7 +70,7 @@ public class NobelPrize extends Application {
         JSONObject jsonObj = null;
         try {
             Reader reader = new BufferedReader(new InputStreamReader(nobelDataStream));
-            //call readData to put all the text into a string
+            //call readData to put all the text into a string and put in JSONOBject
             String jsonText = readData(reader);
             jsonObj = new JSONObject(jsonText);
         } catch (IOException | JSONException ex){
@@ -94,6 +86,19 @@ public class NobelPrize extends Application {
         return jsonObj;
     }
 
+    //this function reads data from the Reader object which reads the character
+    //stream of API data. The data is read and returned as a string.
+    private static String readData (Reader readObj) throws IOException {
+        //create a StringBuilder to hold data
+        StringBuilder stringData = new StringBuilder();
+        int charVal;
+        //read chars and append to the stringbuilder until end of stream reached
+        while ((charVal=readObj.read())!= -1){
+            stringData.append((char)charVal);
+        } 
+        return stringData.toString();
+    }
+    
     public static void main(String[] args) {
         //create json object to hold the nobel prize data
         JSONObject json = readUrl("http://api.nobelprize.org/v1/prize.json?");
