@@ -37,7 +37,7 @@ public class NobelPrize extends Application {
         stage.show();
     }
 
-    private static String readAll(Reader readObj) throws IOException {
+    private static String readLines (Reader readObj) throws IOException {
         StringBuilder stringbuilder = new StringBuilder();
         int charVal;
         //append a single character at a time to the stringbuilder
@@ -48,7 +48,7 @@ public class NobelPrize extends Application {
     }
     
     
-    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
+    public static JSONObject readUrl(String url) {
         //create a URL object to identify the webaddress
         URL nobelAPI = null;
         try {
@@ -75,21 +75,29 @@ public class NobelPrize extends Application {
         
         //Create a BufferedReader obj to efficiently read text from a character stream
         //and use InputStreamReader to decode bytes into characters
+        JSONObject jsonObj = null;
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(nobelDataStream));
             
-            //call readAll to put all the text into a string
-            String jsonText = readAll(reader);
-            JSONObject json = new JSONObject(jsonText);
-        return json;
-        } finally {
+            //call readLines to put all the text into a string
+            String jsonText = readLines(reader);
+            jsonObj = new JSONObject(jsonText);
+        } catch (IOException | JSONException ex){
+            System.out.println("IOException");
+        }
+        
+        try {
             nobelDataStream.close();
         }
+        catch (IOException ex){
+            System.out.println("IOException");
+        }
+        return jsonObj;
     }
 
-    public static void main(String[] args) throws IOException, JSONException {
+    public static void main(String[] args) {
         JSONObject json = new JSONObject();
-        json = readJsonFromUrl("http://api.nobelprize.org/v1/prize.json?");
+        json = readUrl("http://api.nobelprize.org/v1/prize.json?");
         System.out.println(json.toString(4));
         System.out.println(json.get("prizes"));
     }    
