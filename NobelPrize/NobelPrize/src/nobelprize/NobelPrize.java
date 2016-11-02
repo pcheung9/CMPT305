@@ -5,21 +5,21 @@
  */
 package nobelprize;
 
-import java.io.BufferedReader;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.stage.Stage;
-import org.json.JSONException;
 import org.json.JSONObject;
 import java.net.MalformedURLException;
 import java.net.URLConnection;
+import javafx.event.*;
+import javafx.scene.control.*;
+import javafx.scene.layout.FlowPane;
 
 /**
  *
@@ -27,15 +27,41 @@ import java.net.URLConnection;
  */
 public class NobelPrize extends Application {
     
+    //creates the user input screen
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("GUIScreen.fxml"));
-        
-        Scene scene = new Scene(root);
+        //Parent root = FXMLLoader.load(getClass().getResource("GUIScreen.fxml"));
+        FlowPane rootPlane = new FlowPane(300,100);
+        ScrollPane results = new ScrollPane();
+        Scene scene = new Scene(rootPlane);
+        Scene resultsScene = new Scene(results);
+               
+        result = new Label("");
+        results.setContent(result);        
         
         stage.setScene(scene);
+        
+        button1 = new Button("get"); 
+        
+        button1.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event){
+                response.setText("clicked");
+                result.setText(jsonQuery().toString(4));
+                stage.setScene(resultsScene);
+            }
+        });
+        
+        response = new Label("Push button");
+        
+        rootPlane.getChildren().addAll(button1, response);
         stage.show();
     }
+    
+    //@FXML
+    private Button button1; 
+    Label response;
+    Label result;
     
     //This function reads data from the Nobel prize API. It takes the 
     //API URL as an argument and returns a JSON object, which holds
@@ -45,43 +71,41 @@ public class NobelPrize extends Application {
         URL nobelAPI = null;
         try {
             nobelAPI = new URL (url);
-        } catch (MalformedURLException excep){
-            System.out.println("MalformedURLException");
+        } catch (MalformedURLException ex){
+            System.out.println("Exception" + ex);
         }
 
         //Create URLConnection to access the actual content information of the URL
         URLConnection nobelContent= null;
         try {
             nobelContent= nobelAPI.openConnection();
-        } catch (IOException excep){
-            System.out.println("IOException");
+        } catch (IOException ex){
+            System.out.println("Exception" + ex);
         }
         
         //Return the InputStream linked to the API to obtain content
         InputStream nobelDataStream= null;
         try {
             nobelDataStream= nobelContent.getInputStream();
-        } catch (IOException excep){
-            System.out.println("IOException");
+        } catch (IOException ex){
+            System.out.println("Exception" + ex);
         }
         
         //Create a BufferedReader obj to efficiently hold text from a character stream
         //and use InputStreamReader to decode bytes into characters
         JSONObject jsonObj = null;
-        try {
-            Reader reader = new BufferedReader(new InputStreamReader(nobelDataStream));
-            //call readData to put all the text into a string and put in JSONOBject
-            String jsonText = readData(reader);
-            jsonObj = new JSONObject(jsonText);
-        } catch (JSONException ex){
-            System.out.println("IOException");
-        }
+        Reader reader=null;
+    
+        reader = new InputStreamReader(nobelDataStream);
+    
+        //call readData to put all the text into a string and put in JSONOBject
+        String jsonText = readData(reader);
+        jsonObj = new JSONObject(jsonText);
         
         try {
             nobelDataStream.close();
-        }
-        catch (IOException ex){
-            System.out.println("IOException");
+        }catch (IOException ex){
+            System.out.println("Exception" + ex);
         }
         return jsonObj;
     }
@@ -95,20 +119,53 @@ public class NobelPrize extends Application {
         try {
             //read chars and append to the stringbuilder until end of stream reached
             while ((charVal=readObj.read())!= -1){
-            stringData.append((char)charVal);
+                stringData.append((char)charVal);
             }
-        } catch (IOException excep){};
+        } catch (IOException ex){
+            System.out.println("IOException" + ex);
+        }
         
         return stringData.toString();
     }
     
-    public static void main(String[] args) {
-        //create json object to hold the nobel prize data
+    public JSONObject jsonQuery(){
         JSONObject json = readUrl("http://api.nobelprize.org/v1/prize.json?");
-        System.out.println(json.toString(4));
-        //print all the data based on the name (key) of "prizes"
-        System.out.println(json.get("prizes"));
-        //launch JavaFX application
-        launch(args);
+        return json;
+    }
+    
+    public static void main(String[] args) {
+        
+        //add on the category search from user input
+        String category="";
+        String year="";
+        String yearTo="";
+        //ID of a unique Nobel Laureate
+        String id="";
+        String numberOfLaureates="";
+        //Search for laureates by country of birth
+        String bornCountry="";;
+        //Search for laureates by country of birth based on country code
+        String bornCountryCode="";;
+        //Search for laureates by city of birth
+        String bornCity="";;
+        //Search for laureates by country where they died
+        String diedCountry="";;
+        String diedCountryCode="";;
+        String diedCity="";;
+        String bornDate="";;
+        String bornDateTo="";;
+        String diedDate="";;
+        String diedDateTo="";;
+        //Search for laureates based on the motivation of receiving the prize
+        String motivation="";;
+        String gender="";;
+        String affiliation="";
+        
+        //add in fields to end of URL eg. ?category=phyics&year=2000&yearto=2001';
+        //concatenate string eg. url+..+..;  
+     
+        //launch JavaFX application to get user input
+        launch();
+        
     }    
 }
