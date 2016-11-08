@@ -18,8 +18,12 @@ import org.json.JSONObject;
 import java.net.MalformedURLException;
 import java.net.URLConnection;
 import javafx.event.*;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
+import static javafx.geometry.Pos.CENTER;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
+import static javax.swing.text.StyleConstants.Orientation;
 
 /**
  *
@@ -37,11 +41,11 @@ public class NobelPrize extends Application {
         Scene resultsScene = new Scene(results);
                
         result = new Label("");
-        results.setContent(result);        
+        results.setContent(result);
         
         stage.setScene(scene);
         
-        button1 = new Button("get"); 
+        button1 = new Button("get");
         
         button1.setOnAction(new EventHandler<ActionEvent>(){
             @Override
@@ -63,6 +67,13 @@ public class NobelPrize extends Application {
     Label response;
     Label result;
     
+    //This function creates a JSON object in order to read the API URL. It returns
+    //the JSON object to be put into the results Scene.
+    public JSONObject jsonQuery(){
+        JSONObject json = readUrl("http://api.nobelprize.org/v1/prize.json?");
+        return json;
+    }
+        
     //This function reads data from the Nobel prize API. It takes the 
     //API URL as an argument and returns a JSON object, which holds
     //the name/value pairs of the Nobel prize JSON data.
@@ -128,10 +139,6 @@ public class NobelPrize extends Application {
         return stringData.toString();
     }
     
-    public JSONObject jsonQuery(){
-        JSONObject json = readUrl("http://api.nobelprize.org/v1/prize.json?");
-        return json;
-    }
     
     public static void main(String[] args) {
         
